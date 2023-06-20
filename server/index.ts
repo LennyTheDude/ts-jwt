@@ -1,10 +1,12 @@
-const express = require('express');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const router = require('./routes/index');
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import * as dotenv from 'dotenv';
+import router from './routes/index';
+import errorMiddleware from './middlewares/error-middleware';
+
 const sequelize = require('./models/index').sequelize;
-const errorMiddleware = require('./middlewares/error-middleware');
-require('dotenv').config();
+dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const app = express();

@@ -1,9 +1,11 @@
-const userService = require("../services/user-service");
+import { Request, Response, NextFunction } from "express";
+
+import userService from "../services/user-service";
 const { validationResult } = require('express-validator');
 const ApiError = require("../exceptions/api-error");
 
 class UserController {
-    async signup (req, res, next) {
+    async signup (req: Request, res: Response, next: NextFunction) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) return next(ApiError.BadRequest('Validation error', errors.array()));
@@ -16,7 +18,7 @@ class UserController {
         }
     }
 
-    async login (req, res, next) {
+    async login (req: Request, res: Response, next: NextFunction) {
         try {
             const { email, password } = req.body;
             const userData = await userService.login(email, password);
@@ -27,7 +29,7 @@ class UserController {
         }
     }
     
-    async logout (req, res, next) {
+    async logout (req: Request, res: Response, next: NextFunction) {
         try {
             const { refreshToken } = req.cookies;
             const token = await userService.logout(refreshToken);
@@ -38,17 +40,17 @@ class UserController {
         }
     }
 
-    async activate (req, res, next) {
+    async activate (req: Request, res: Response, next: NextFunction) {
         try {
             const activationLink = req.params.link
             await userService.activate(activationLink)
-            return res.redirect(process.env.CLIENT_URL)
+            return res.redirect(process.env.CLIENT_URL || 'http://localhost:3000')
         } catch (e) {
             next(e);
         }
     }
 
-    async refresh (req, res, next) {
+    async refresh (req: Request, res: Response, next: NextFunction) {
         try {
             const { refreshToken } = req.cookies;
             const userData = await userService.refresh(refreshToken);
@@ -59,7 +61,7 @@ class UserController {
         }
     }
 
-    async getUsers (req, res, next) {
+    async getUsers (req: Request, res: Response, next: NextFunction) {
         try {
             const users = await userService.getAllUsers();
             return res.json(users);
@@ -69,4 +71,4 @@ class UserController {
     }
 }
 
-module.exports = new UserController();
+export default new UserController();

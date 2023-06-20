@@ -1,14 +1,14 @@
 // const UserModel = require('../models/user-model');
-const bcrypt = require('bcrypt');
-const uuid = require('uuid');
-const mailService = require('./mail-service');
-const tokenService = require('./token-service');
-const UserDto = require('../dtos/user-dto');
-const ApiError = require('../exceptions/api-error');
+import bcrypt from 'bcrypt';
+import * as uuid from 'uuid';
+import mailService from './mail-service';
+import tokenService from './token-service';
+import UserDto from '../dtos/user-dto';
+import ApiError from '../exceptions/api-error';
 const User = require('../models').User;
 
 class UserService {
-    async signup(email, password) {
+    async signup(email: string, password: string) {
         const existingUser = await User.findOne({ where: { email } });
 
         if (existingUser) {
@@ -32,7 +32,7 @@ class UserService {
         }
     }
 
-    async activate(activationLink) {
+    async activate(activationLink: string) {
         const user = await User.findOne({ where: { activationLink } })
         if (!user) {
             throw ApiError.BadRequest('Incorrect activation link')
@@ -42,9 +42,8 @@ class UserService {
         await user.save()
     }
 
-    async login(email, password) {
+    async login(email: string, password: string) {
         const existingUser = await User.findOne({where: {email}});
-        console.log('????????????????????????????????????????', existingUser);
 
         if (!existingUser) {
             throw ApiError.BadRequest('User not found')
@@ -68,12 +67,12 @@ class UserService {
         }
     }
 
-    async logout(refreshToken) {
+    async logout(refreshToken: string) {
         const token = await tokenService.removeToken(refreshToken);
         return token;
     }
 
-    async refresh(refreshToken) {
+    async refresh(refreshToken: string) {
         if (!refreshToken) {
             throw ApiError.UnauthorizedError();
         }
@@ -85,7 +84,6 @@ class UserService {
         }
 
         const user = await User.findByPk(userData.id);
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: ', user);
         const userDto = new UserDto(user)
 
 
@@ -106,4 +104,4 @@ class UserService {
 
 }
 
-module.exports = new UserService();
+export default new UserService();
